@@ -23,7 +23,7 @@
     </style>
 </head>
 <body class="hold-transition sidebar-mini">
-    <div id="app">
+    <div id="app" class="d-flex flex-column min-vh-100">
         <admin-layout></admin-layout>
     </div>
 </body>

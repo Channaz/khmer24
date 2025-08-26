@@ -1,5 +1,4 @@
 <template>
-    <!-- Main container for the login page, centered vertically and horizontally -->
     <div
         class="d-flex align-items-center justify-content-center min-vh-100 bg-light-subtle mb-3"
     >
@@ -13,57 +12,86 @@
                         <h3 class="text-center fw-bold mb-4">
                             Log in to manage ads or post free ad
                         </h3>
-
                         <form @submit.prevent="handleLogin">
+                            <!-- Phone Number Input -->
                             <div class="mb-2">
-                                <label for="username" class="form-label fw-bold"
-                                    >Phone Number or Username
-                                    <span class="text-danger">*</span></label
-                                >
+                                <label for="phone" class="form-label fw-bold">
+                                    {{ t("forms.phone") }}
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <input
                                     type="text"
                                     class="form-control rounded-pill px-4 py-2"
-                                    :class="{ 'yellow-bg': !isUsernameFocused }"
-                                    id="username"
-                                    v-model="username"
-                                    @focus="isUsernameFocused = true"
-                                    @blur="isUsernameFocused = false"
+                                    :class="{
+                                        'yellow-bg': !isPhoneFocused,
+                                        'is-invalid': validationErrors.phone,
+                                    }"
+                                    id="phone"
+                                    v-model="loginData.phone"
+                                    @focus="isPhoneFocused = true"
+                                    @blur="isPhoneFocused = false"
                                 />
-                            </div>
-                            <div class="mb-3 position-relative">
-                                <label for="password" class="form-label fw-bold"
-                                    >Password
-                                    <span class="text-danger">*</span></label
+                                <div
+                                    class="invalid-feedback"
+                                    v-if="validationErrors.phone"
                                 >
-                                <input
-                                    :type="passwordType"
-                                    class="form-control rounded-pill px-4 py-2"
-                                    :class="{ 'yellow-bg': !isPasswordFocused }"
-                                    id="password"
-                                    v-model="password"
-                                    @focus="isPasswordFocused = true"
-                                    @blur="isPasswordFocused = false"
-                                />
-                                <!-- Eye icon to toggle password visibility -->
-                                <span
-                                    class="position-absolute end-0 translate-middle-y me-3"
-                                    style="top: 70%; cursor: pointer"
-                                    @click="togglePasswordVisibility"
-                                >
-                                    <i class="fa-solid fa-eye"></i>
-                                </span>
+                                    {{ validationErrors.phone }}
+                                </div>
                             </div>
-
+                            <!-- Password Input -->
+                            <div class="form-group mb-3">
+                                <label
+                                    for="password"
+                                    class="form-label fw-bold text-dark mb-2"
+                                >
+                                    {{ t("forms.password") }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <input
+                                        :type="passwordType"
+                                        class="form-control rounded-pill px-4 py-2"
+                                        :class="{
+                                            'yellow-bg': !isPasswordFocused,
+                                            'is-invalid':
+                                                validationErrors.password,
+                                        }"
+                                        id="password"
+                                        v-model="loginData.password"
+                                        @focus="isPasswordFocused = true"
+                                        @blur="isPasswordFocused = false"
+                                    />
+                                    <!-- Eye icon to toggle password visibility -->
+                                    <span
+                                        class="password-icon"
+                                        @click="togglePasswordVisibility"
+                                    >
+                                        <i
+                                            :class="[
+                                                'fa-solid',
+                                                showPassword
+                                                    ? 'fa-eye'
+                                                    : 'fa-eye-slash',
+                                            ]"
+                                        ></i>
+                                    </span>
+                                </div>
+                                <div
+                                    class="invalid-feedback"
+                                    v-if="validationErrors.password"
+                                >
+                                    {{ validationErrors.password }}
+                                </div>
+                            </div>
                             <div class="d-grid gap-2 mb-2">
                                 <button
                                     type="submit"
                                     class="btn btn-blue rounded-pill fw-bold py-2"
                                 >
-                                    Submit
+                                    {{ t("common.login") }}
                                 </button>
                             </div>
                         </form>
-
                         <div class="text-center">
                             <a href="#" class="text-decoration-none"
                                 >Forgot Password Or Account</a
@@ -96,16 +124,28 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { logUserIn } from "../../service/auth";
+import Swal from "sweetalert2";
 
-// Reactive variables to store the username and password input values
-const username = ref("Channa");
-const password = ref("secretpassword");
+const router = useRouter();
+const { t } = useI18n();
+
+// Store form data in a reactive object for better organization
+const loginData = reactive({
+    phone: "",
+    password: "",
+});
+
 const showPassword = ref(false);
 
-// Reactive variables to manage focus state for styling
-const isUsernameFocused = ref(false);
-const isPasswordFocused = ref(false);
+// Reactive object for storing validation error messages
+const validationErrors = reactive({
+    phone: null,
+    password: null,
+});
 
 // Computed property to dynamically change the input type based on the showPassword state
 const passwordType = computed(() => (showPassword.value ? "text" : "password"));
@@ -115,21 +155,75 @@ const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
 };
 
-// Method to handle the form submission
-const handleLogin = () => {
-    console.log("Login attempt with:", {
-        username: username.value,
-        password: password.value,
+// Reusable function to display SweetAlert messages
+const showAlert = (icon, title, text) => {
+    Swal.fire({
+        icon,
+        title,
+        text,
     });
-    // Add your login logic here, e.g., an API call to authenticate the user
 };
+
+// Method to handle form submission and validation
+const handleLogin = async () => {
+    // Reset validation errors
+    validationErrors.phone = null;
+    validationErrors.password = null;
+
+    let hasError = false;
+
+    // Validation logic
+    if (!loginData.phone) {
+        validationErrors.phone = t("messages.required");
+        hasError = true;
+    }
+    if (!loginData.password) {
+        validationErrors.password = t("messages.required");
+        hasError = true;
+    }
+
+    if (hasError) {
+        // Don't show alert for validation errors, let the form display them
+        // showAlert(
+        //     "error",
+        //     "Validation Error",
+        //     "Please fill in all required fields."
+        // );
+        return;
+    }
+
+    // Show a loading alert while the login process is in progress
+    Swal.fire({
+        title: "Logging in...",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    try {
+        const res = await logUserIn(loginData.phone, loginData.password);
+        Swal.close(); // Close the loading modal
+
+        showAlert("success", "Success!", res.data.message);
+        router.replace({ name: "Home" });
+    } catch (error) {
+        Swal.close(); // Close the loading modal
+
+        // Don't log to console, just show user-friendly error message
+        const errorMessage =
+            error.response?.data?.message ||
+            "Something went wrong. Please try again.";
+        showAlert("error", "Login Failed", errorMessage);
+    }
+};
+
+// Reactive variables to manage focus state for styling
+const isPhoneFocused = ref(false);
+const isPasswordFocused = ref(false);
 </script>
 
 <style scoped>
-/*
-* All styles for this component are scoped, meaning they will not
-* affect other parts of your application.
-*/
 .login-card {
     background-color: #fff;
     border-radius: 1rem;
@@ -173,5 +267,44 @@ const handleLogin = () => {
 .social-btn.google {
     background-color: #ea4335;
     color: white;
+}
+.password-icon {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    cursor: pointer;
+    transform: translateY(-50%);
+    color: #6c757d; /* text-muted color */
+    z-index: 10;
+    background-color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+/* Hide Bootstrap's default validation icon when eye icon is present */
+.form-control.is-invalid {
+    background-image: none !important;
+    padding-right: 3rem !important;
+}
+
+/* Ensure error messages are visible */
+.invalid-feedback {
+    display: block !important;
+    color: #dc3545 !important;
+    font-size: 0.875rem !important;
+    margin-top: 0.25rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+}
+
+/* Additional styling for invalid inputs */
+.form-control.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
 }
 </style>

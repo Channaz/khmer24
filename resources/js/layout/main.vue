@@ -13,8 +13,11 @@
             Feedback
         </a>
 
-        
+        <!-- Notification Toast Component -->
+        <NotificationToast />
     </div>
 </template>
 
-<script setup></script>
+<script setup>
+import NotificationToast from "../components/NotificationToast.vue";
+</script>

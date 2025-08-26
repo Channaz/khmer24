@@ -1,0 +1,199 @@
+{
+    "categories": [
+        {
+            "id": "all",
+            "name": "All Category",
+            "icon": "fa-solid fa-th-large",
+            "color": "text-muted",
+            "selected": true
+        },
+        {
+            "id": "vehicles",
+            "name": "Cars and Vehicles",
+            "icon": "fa-solid fa-car",
+            "color": "text-primary",
+            "hasSubcategories": true,
+            "subcategories": [
+                {
+                    "id": "cars-sale",
+                    "name": "Cars for Sale",
+                    "icon": "fa-solid fa-car",
+                    "color": "text-primary"
+                },
+                {
+                    "id": "bicycles",
+                    "name": "Bicycles",
+                    "icon": "fa-solid fa-bicycle",
+                    "color": "text-warning"
+                },
+                {
+                    "id": "motorcycles",
+                    "name": "Motorcycles For Sale",
+                    "icon": "fa-solid fa-motorcycle",
+                    "color": "text-dark"
+                },
+                {
+                    "id": "vehicles-rent",
+                    "name": "Vehicles For Rent",
+                    "icon": "fa-solid fa-car",
+                    "color": "text-primary"
+                },
+                {
+                    "id": "maintenance",
+                    "name": "Maintenance & Repair",
+                    "icon": "fa-solid fa-wrench",
+                    "color": "text-success"
+                },
+                {
+                    "id": "lorries-vans",
+                    "name": "Lorries, Vans & Tractors",
+                    "icon": "fa-solid fa-truck",
+                    "color": "text-success"
+                },
+                {
+                    "id": "financing",
+                    "name": "Financing & Insurance",
+                    "icon": "fa-solid fa-dollar-sign",
+                    "color": "text-danger"
+                },
+                {
+                    "id": "tuk-tuk",
+                    "name": "Tuk Tuk & Remork",
+                    "icon": "fa-solid fa-truck-pickup",
+                    "color": "text-warning"
+                },
+                {
+                    "id": "parts",
+                    "name": "Parts & Accessories",
+                    "icon": "fa-solid fa-cog",
+                    "color": "text-danger"
+                },
+                {
+                    "id": "others",
+                    "name": "Others",
+                    "icon": "fa-solid fa-th",
+                    "color": "text-warning"
+                }
+            ]
+        },
+        {
+            "id": "electronics",
+            "name": "Electronics",
+            "icon": "fa-solid fa-mobile-alt",
+            "color": "text-primary"
+        },
+        {
+            "id": "real-estate",
+            "name": "Real Estate",
+            "icon": "fa-solid fa-home",
+            "color": "text-success"
+        },
+        {
+            "id": "jobs",
+            "name": "Jobs",
+            "icon": "fa-solid fa-briefcase",
+            "color": "text-info"
+        },
+        {
+            "id": "services",
+            "name": "Services",
+            "icon": "fa-solid fa-tools",
+            "color": "text-secondary"
+        },
+        {
+            "id": "furniture",
+            "name": "Furniture & Home",
+            "icon": "fa-solid fa-couch",
+            "color": "text-warning"
+        },
+        {
+            "id": "fashion",
+            "name": "Fashion & Beauty",
+            "icon": "fa-solid fa-tshirt",
+            "color": "text-pink"
+        },
+        {
+            "id": "books",
+            "name": "Books & Education",
+            "icon": "fa-solid fa-book",
+            "color": "text-info"
+        },
+        {
+            "id": "sports",
+            "name": "Sports & Leisure",
+            "icon": "fa-solid fa-futbol",
+            "color": "text-success"
+        },
+        {
+            "id": "pets",
+            "name": "Pets & Animals",
+            "icon": "fa-solid fa-paw",
+            "color": "text-warning"
+        },
+        {
+            "id": "food",
+            "name": "Food & Beverages",
+            "icon": "fa-solid fa-utensils",
+            "color": "text-danger"
+        },
+        {
+            "id": "health",
+            "name": "Health & Beauty",
+            "icon": "fa-solid fa-heartbeat",
+            "color": "text-danger"
+        },
+        {
+            "id": "entertainment",
+            "name": "Entertainment",
+            "icon": "fa-solid fa-film",
+            "color": "text-primary"
+        },
+        {
+            "id": "business",
+            "name": "Business & Industrial",
+            "icon": "fa-solid fa-building",
+            "color": "text-secondary"
+        },
+        {
+            "id": "travel",
+            "name": "Travel & Tourism",
+            "icon": "fa-solid fa-plane",
+            "color": "text-info"
+        },
+        {
+            "id": "agriculture",
+            "name": "Agriculture",
+            "icon": "fa-solid fa-seedling",
+            "color": "text-success"
+        },
+        {
+            "id": "construction",
+            "name": "Construction",
+            "icon": "fa-solid fa-hammer",
+            "color": "text-warning"
+        },
+        {
+            "id": "events",
+            "name": "Events & Weddings",
+            "icon": "fa-solid fa-calendar-alt",
+            "color": "text-primary"
+        },
+        {
+            "id": "security",
+            "name": "Security & Safety",
+            "icon": "fa-solid fa-shield-alt",
+            "color": "text-danger"
+        },
+        {
+            "id": "transportation",
+            "name": "Transportation & Logistics",
+            "icon": "fa-solid fa-shipping-fast",
+            "color": "text-info"
+        }
+    ],
+    "metadata": {
+        "version": "1.0",
+        "lastUpdated": "2024-01-01",
+        "description": "Category data for Khmer24 marketplace dropdown"
+    }
+}

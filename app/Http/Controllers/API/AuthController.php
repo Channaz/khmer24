@@ -14,7 +14,7 @@ class AuthController extends Controller
 {
     //
     use FuncAssets;
-    function login(Request $request, Response $response)
+    public function login(Request $request, Response $response)
     {
         // $auth_token = $request->cookie('AUTH-TOKEN');
         $auth_token = CustomFunction::getCookie($request, 'AUTH-TOKEN');
@@ -27,29 +27,32 @@ class AuthController extends Controller
                 'user' => $user
             ])->setStatusCode(200);
         }
+
         $request->validate([
             'phone_number' => 'required',
             'password' => 'required',
         ]);
-        $phoneHash = $this->customHash($request->phone, true);
+
+        $phoneHash = $this->customHash($request->phone_number, true);
         $passwordHash = $this->customHash($request->password, false);
 
         $user = User::where('phone_number', $phoneHash)->first();
+        // dd($user);
         if (!$user) {
             throw ValidationException::withMessages([
-                'user' => 'លេខទូរស័ព្ទគ្មានក្នុងប្រព័ន្ធ។',
+                'message' => 'លេខទូរស័ព្ទគ្មានក្នុងប្រព័ន្ធ។',
             ]);
         }
 
         if ($user->is_active === 0) {
             throw ValidationException::withMessages([
-                'user' => 'គណនីប្រើប្រាស់ត្រូវបានបិទ។',
+                'message' => 'គណនីប្រើប្រាស់ត្រូវបានបិទ។',
             ]);
         }
 
-        if ($user->passwd !== $passwordHash) {
+        if ($user->password !== $passwordHash) {
             throw ValidationException::withMessages([
-                'user' => 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ។',
+                'message' => 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ។',
             ]);
         }
 
@@ -63,23 +66,23 @@ class AuthController extends Controller
         $user->save();
 
         // Set the remember token cookie with very long expiry
-        CustomFunction::setCookie($response, 'REM-TOKEN', $user->rem_token, $expiry / 60, '/');
+        // CustomFunction::setCookie($response, 'REM-TOKEN', $user->rem_token, $expiry / 60, '/');
 
-        CustomFunction::setCookie($response, 'AUTH-TOKEN', $user->auth_token, 0, '/');
+        CustomFunction::setCookie($response, 'AUTH-TOKEN', $user->auth_token, $expiry / 60, '/');
         return $response->setContent([
             'message' => 'អ្នកបានចូលក្នុងប្រព័ន្ធដោយជោគជ័យ។',
-            'user' => $user
+            'user' => $user,
         ])->setStatusCode(200);
     }
 
-    function logout()
+    public function logout()
     {
         return response(['message' => 'អ្នកបានចេញពីប្រព័ន្ធដោយជោគជ័យ។'])
             ->cookie('REM-TOKEN', 'deleted', -1, '/')
             ->cookie('AUTH-TOKEN', 'deleted', -1, '/');
     }
 
-    function verify(Request $request, Response $response)
+    public function verify(Request $request, Response $response)
     {
         // $auth_token = $request->cookie('AUTH-TOKEN');
         $auth_token = CustomFunction::getCookie($request, 'AUTH-TOKEN');

@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tbl_user', function (Blueprint $table) {
-            $table->integer('user_id',true)->primary();
+            $table->integer('user_id', true)->primary();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
             $table->string('email', 100);
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('social_provider_type', ['facebook', 'google'])->nullable();
             $table->string('auth_token', 100);
             $table->string('rem_token')->nullable();
-            $table->date('rem_expiry')->nullable();
+            $table->bigInteger('rem_expiry')->nullable();
             $table->integer('created_by')->index('created_by')->nullable();
             $table->integer('updated_by')->index('updated_by')->nullable();
             $table->timestamps();
@@ -35,7 +35,7 @@ return new class extends Migration
                 'first_name' => 'Channa',
                 'last_name' => 'No',
                 'email' => 'channa@example.com',
-                'phone_number' => '012345678',
+                'phone_number' => md5(md5(md5('012345678'))),
                 'password' => md5(md5(md5('channa'))),
                 'is_active' => true,
                 'social_provider_id' => null,

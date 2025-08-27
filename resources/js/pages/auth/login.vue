@@ -127,11 +127,17 @@
 import { ref, computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { logUserIn } from "../../service/auth";
+import { useStore } from "vuex";
 import Swal from "sweetalert2";
 
 const router = useRouter();
+const store = useStore();
 const { t } = useI18n();
+
+if (store.getters["auth/isLoggedIn"]) {
+
+    router.replace({ name: "Home" });
+}
 
 // Store form data in a reactive object for better organization
 const loginData = reactive({
@@ -184,11 +190,11 @@ const handleLogin = async () => {
 
     if (hasError) {
         // Don't show alert for validation errors, let the form display them
-        // showAlert(
-        //     "error",
-        //     "Validation Error",
-        //     "Please fill in all required fields."
-        // );
+        showAlert(
+            "error",
+            "Validation Error",
+            "Please fill in all required fields."
+        );
         return;
     }
 
@@ -202,17 +208,30 @@ const handleLogin = async () => {
     });
 
     try {
-        const res = await logUserIn(loginData.phone, loginData.password);
-        Swal.close(); // Close the loading modal
-
-        showAlert("success", "Success!", res.data.message);
-        router.replace({ name: "Home" });
+        const result = await store.dispatch("auth/login", {
+            phone: loginData.phone,
+            password: loginData.password,
+        });
+        Swal.close();
+        if (result && result.success) {
+            showAlert(
+                "success",
+                "Login Successful",
+                "អ្នកបានចូលក្នុងប្រព័ន្ធដោយជោគជ័យ។"
+            );
+            router.replace({ name: "Home" });
+            
+        } else {
+            showAlert(
+                "error",
+                "Login Failed",
+                result?.error || "Invalid response from server."
+            );
+        }
     } catch (error) {
-        Swal.close(); // Close the loading modal
-
-        // Don't log to console, just show user-friendly error message
+        Swal.close();
         const errorMessage =
-            error.response?.data?.message ||
+            error?.response?.data?.message ||
             "Something went wrong. Please try again.";
         showAlert("error", "Login Failed", errorMessage);
     }

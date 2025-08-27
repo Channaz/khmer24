@@ -96,9 +96,9 @@ class AuthController extends Controller
                 200,
             );
         }
-        // $rem_token = $request->cookie('REM-TOKEN');
-        $rem_token = CustomFunction::getCookie($request, 'REM-TOKEN');
-        $user = User::where('rem_token', $rem_token)
+        $rem_token = $request->cookie('REM-TOKEN');
+        $auth_token_expiry = CustomFunction::getCookie($request, 'AUTH-TOKEN');
+        $user = User::where('auth_token', $auth_token_expiry)
             ->first();
         if ($user && $user->rem_token != null && $user->rem_expiry != null && $user->rem_expiry - time() > 0) {
             // return response(
@@ -115,6 +115,6 @@ class AuthController extends Controller
                 'user' => $user,
             ])->setStatusCode(200);
         }
-        return response(['message' => 'អ្នកគ្មានសិទ្ធក្នុងការចូលក្នុងប្រព័ន្ធទេ។'], 401);
+        return response(['error' => 'អ្នកគ្មានសិទ្ធក្នុងការចូលក្នុងប្រព័ន្ធទេ។'], 401);
     }
 }

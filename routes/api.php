@@ -9,7 +9,7 @@ Route::prefix('/public')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/verify', [AuthController::class, 'verify']);
-        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register', [UserController::class, 'store']);
     });
 });
 

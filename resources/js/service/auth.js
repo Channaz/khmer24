@@ -27,7 +27,25 @@ async function isAuthorized() {
     }
 }
 
+async function registerUser(params) {
+    // Build payload, include email only if present
+    const payload = {
+        first_name: params.first_name,
+        last_name: params.last_name,
+        phone_number: params.phone_number,
+        password: params.password,
+    };
+    if (params.email) {
+        payload.email = params.email;
+    }
+    try {
+        return await axios.post("/api/public/auth/register", payload);
+    } catch (error) {
+        throw error;
+    }
+}
 
-export { logUserIn, logUserOut, isAuthorized };
+
+export { logUserIn, logUserOut, isAuthorized, registerUser };
 
 

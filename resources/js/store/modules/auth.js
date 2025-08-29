@@ -1,4 +1,4 @@
-import { isAuthorized, logUserIn, logUserOut } from "../../service/auth";
+import { isAuthorized, logUserIn, logUserOut, registerUser } from "../../service/auth";
 
 const auth = {
     namespaced: true,
@@ -130,6 +130,46 @@ const auth = {
             }
         },
     },
+    async register({
+        commit,
+        dispatch
+    }) {
+        try {
+            commit("SET_LOADING", true, { root: true });
+            commit("SET_AUTH_ERROR", null);
+            const response = await registerUser();
+            if (response && response.data && response.data.user) {
+                commit("SET_AUTHENTICATED", true);
+                commit("SET_LAST_AUTH_CHECK", Date.now());
+                await dispatch("user/loadUserData", response.data.user, {
+                    root: true
+                });
+                dispatch(
+                    "showNotification",
+                    { type: "success", message: response.data.message },
+                    { root: true }
+                );
+                return { success: true };
+            } else {
+                throw new Error(response?.data?.message || "Registration failed");
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            const errorMessage =
+                error?.response?.data?.message ||
+                error.message ||
+                "Registration failed. Please try again.";
+            commit("SET_AUTH_ERROR", errorMessage);
+            dispatch(
+                "showNotification",
+                { type: "error", message: errorMessage },
+                { root: true }
+            );
+            return { success: false, error: errorMessage };
+        } finally {
+            commit("SET_LOADING", false, { root: true });
+        }
+    },
     getters: {
         isAuthenticated: (state) => state.isAuthenticated,
         isAuthVerified: (state) => state.authVerified,
@@ -138,6 +178,7 @@ const auth = {
         authError: (state) => state.authError,
         hasAuthError: (state) => !!state.authError,
         isLoggedIn: (state) => state.isAuthenticated && state.authVerified,
+        
     },
 };
 

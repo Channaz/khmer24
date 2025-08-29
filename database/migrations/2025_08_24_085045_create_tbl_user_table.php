@@ -16,13 +16,13 @@ return new class extends Migration
             $table->integer('user_id', true)->primary();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
-            $table->string('email', 100);
+            $table->string('email', 100)->nullable();
             $table->string('phone_number', 100);
             $table->string('password', 100);
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default(true);
             $table->integer('social_provider_id')->nullable();
             $table->enum('social_provider_type', ['facebook', 'google'])->nullable();
-            $table->string('auth_token', 100);
+            $table->string('auth_token', 100)->nullable();
             $table->string('rem_token')->nullable();
             $table->bigInteger('rem_expiry')->nullable();
             $table->integer('created_by')->index('created_by')->nullable();
@@ -40,7 +40,7 @@ return new class extends Migration
                 'is_active' => true,
                 'social_provider_id' => null,
                 'social_provider_type' => null,
-                'auth_token' => md5(md5(md5('channa'))),
+                'auth_token' => md5(md5(md5('channa' . '012345678'))),
                 'created_by' => 1,
                 'updated_by' => 1,
             ],

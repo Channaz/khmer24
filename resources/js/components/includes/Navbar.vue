@@ -8,6 +8,11 @@
                     <img
                         src="/assets/images/khmer24.png"
                         alt="Khmer24 Logo"
+                        height="40"
+                    />
+                    <img
+                        src="/assets/images/cam-logo.png" class="ms-2"
+                        alt="Cambodia Logo"
                         height="30"
                     />
                 </a>
@@ -146,13 +151,13 @@
                     <div v-if="isAuthPage" class="d-none d-md-flex me-3">
                         <router-link
                             to="/login"
-                            class="nav-link text-muted me-2"
+                            class="nav-link me-2 fw-bold text-primary"
                             >Login</router-link
                         >
                         <span class="text-muted">|</span>
                         <router-link
                             to="/register"
-                            class="nav-link text-muted ms-2"
+                            class="nav-link me-2 fw-bold text-primary ms-2"
                             >Register</router-link
                         >
                     </div>
@@ -192,9 +197,11 @@
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                             >
-                                <i
-                                    class="fa-solid fa-user-circle fa-lg me-2"
+                                <span class="user-icon">
+                                    <i
+                                    class="fa-solid fa-user-circle fa-lg"
                                 ></i>
+                                </span>
                             </button>
                             <div
                                 class="dropdown-menu user-dropdown-menu"
@@ -303,12 +310,14 @@
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { fetchCategories } from "../../service/categories";
+import Swal from "sweetalert2";
 
 const route = useRoute();
 const store = useStore();
+const router = useRouter();
 
 const isCategoryDropdownOpen = ref(false);
 const selectedCategory = ref("All Category");
@@ -394,10 +403,42 @@ const toggleUserDropdown = () => {
 
 const handleLogout = async () => {
     try {
-        await store.dispatch("auth/logout");
-        isUserDropdownOpen.value = false;
+        // Show a confirmation dialog using SweetAlert2
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out of your account.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, log out!'
+        });
+
+        // If the user confirms, proceed with logout
+        if (result.isConfirmed) {
+            await store.dispatch("auth/logout");
+            isUserDropdownOpen.value = false;
+            router.replace({ name: "Login" });
+
+            Swal.fire({
+                title: 'Logged Out!',
+                text: 'You have been successfully logged out.',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: false
+            });
+
+        }
     } catch (error) {
         console.error("Logout error:", error);
+        // Show an error message if logout fails
+        Swal.fire({
+            title: 'Error!',
+            text: 'There was an issue logging you out.',
+            icon: 'error',
+            timer: 3000,
+            showConfirmButton: false
+        });
     }
 };
 
@@ -484,10 +525,6 @@ onUnmounted(() => {
     background-color: white;
 }
 
-.search-btn:hover {
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-}
 
 /* Make sure the input group doesn't have extra borders */
 .input-group > .form-control:not(:first-child) {
@@ -504,7 +541,7 @@ onUnmounted(() => {
     margin: 0;
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0.5rem 1rem rgba(85, 85, 85, 0.15);
 }
 
 .dropdown-header {
@@ -622,5 +659,12 @@ onUnmounted(() => {
 .position-relative .badge {
     font-size: 0.6rem;
     line-height: 1;
+}
+
+.user-icon, .user-icon-container, .user-menu-trigger {
+    border-bottom: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
 }
 </style>

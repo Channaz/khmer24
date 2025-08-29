@@ -1,17 +1,17 @@
 <template>
     <div
-        class="d-flex align-items-center justify-content-center min-vh-100 bg-light-subtle mb-3"
+        class="d-flex align-items-center justify-content-center min-vh-100 bg-light-subtle"
     >
         <div class="container py-3">
             <div class="row justify-content-center">
                 <div class="col-lg-4">
                     <!-- The main login card container -->
                     <div
-                        class="card border-0 rounded-4 shadow-lg p-3 p-md-5 login-card"
+                        class="card w-100 border-0 rounded-3 shadow-lg p-md-5 login-card"
                     >
-                        <h3 class="text-center fw-bold mb-4">
-                            Log in to manage ads or post free ad
-                        </h3>
+                        <h4 class="text-center fw-bold mb-4">
+                            Log in to your account
+                        </h4>
                         <form @submit.prevent="handleLogin">
                             <!-- Phone Number Input -->
                             <div class="mb-2">
@@ -92,10 +92,12 @@
                                 </button>
                             </div>
                         </form>
-                        <div class="text-center">
+                        <div class="text-end mb-2">
                             <a href="#" class="text-decoration-none"
-                                >Forgot Password Or Account</a
+                                >Forgot Password Or Account?</a
                             >
+                        </div>
+                        <div class="text-center">
                             <hr class="my-2" />
                             <p class="text-muted text-uppercase mb-2">Or</p>
                             <div
@@ -110,11 +112,27 @@
                             </div>
                             <hr class="my-3" />
                             <p class="text-muted text-uppercase mb-2">Or</p>
-                            <a
-                                href="#"
+                        </div>
+
+                        <p class="">No account yet?</p>
+                        <div class="d-grid">
+                            <router-link
+                                to="/register"
                                 class="btn btn-orange rounded-pill fw-bold py-2"
-                                >Create an Account</a
                             >
+                                Create an Account
+                            </router-link>
+                        </div>
+                        <!-- Privacy text -->
+                        <div class="text-center text-gray-500 text-xs mt-4">
+                            By continuing, you agree to our
+                            <a href="#" class="text-blue-500 underline"
+                                >Posting Rule</a
+                            >
+                            and
+                            <a href="#" class="text-blue-500 underline"
+                                >Privacy Policy</a
+                            >.
                         </div>
                     </div>
                 </div>
@@ -135,14 +153,13 @@ const store = useStore();
 const { t } = useI18n();
 
 if (store.getters["auth/isLoggedIn"]) {
-
     router.replace({ name: "Home" });
 }
 
 // Store form data in a reactive object for better organization
 const loginData = reactive({
-    phone: "",
-    password: "",
+    phone: "012345678",
+    password: "channa",
 });
 
 const showPassword = ref(false);
@@ -167,6 +184,8 @@ const showAlert = (icon, title, text) => {
         icon,
         title,
         text,
+        timer: 1500,
+        showConfirmButton: false,
     });
 };
 
@@ -220,7 +239,6 @@ const handleLogin = async () => {
                 "អ្នកបានចូលក្នុងប្រព័ន្ធដោយជោគជ័យ។"
             );
             router.replace({ name: "Home" });
-            
         } else {
             showAlert(
                 "error",
@@ -247,7 +265,7 @@ const isPasswordFocused = ref(false);
     background-color: #fff;
     border-radius: 1rem;
     box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
-    max-width: 480px;
+    max-width: 500px;
     width: 100%;
 }
 .form-control.yellow-bg {

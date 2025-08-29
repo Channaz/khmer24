@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../pages/Home.vue";
 import About from "../pages/About.vue";
 import Login from "../pages/auth/login.vue";
+import register from "../pages/auth/register.vue";
 import Navbar from "../components/includes/Navbar.vue";
 import Footer from "../components/includes/Footer.vue";
 import { isAuthorized, logUserOut } from "../service/auth";
@@ -61,6 +62,27 @@ const routes = [
         },
         meta: { requireUser: true },
     },
+    {
+        // This is the new logout route
+        path: "/logout",
+        name: "Logout",
+        // The beforeEnter guard handles the entire logout process
+        beforeEnter: async (to, from, next) => {
+            // Dispatch the logout action from the store
+            await store.dispatch("auth/logout");
+            // Redirect to the login page after logout is complete
+            next({ name: "Login" });
+        },
+    },
+    {
+        path: "/register",
+        name: "Register",
+        components: {
+            default: register,
+            ...includes,
+        },
+        meta: { requiresGuest: true },
+    },
 ];
 
 const router = createRouter({
@@ -94,14 +116,11 @@ router.beforeResolve(async (to, from, next) => {
     const isLoggedIn = store.getters["auth/isLoggedIn"];
 
     if (to.meta.requireUser && !isLoggedIn) {
-        console.log("logged in?",isLoggedIn);
-
-
         setSessionStorage("REQUESTED", to.fullPath);
         return next({ name: "Login" });
     }
 
-    if (to.name === "Login" && isLoggedIn) {
+    if ((to.name === "Login" || to.name === "Register") && isLoggedIn) {
         return next({ name: "Home" });
     }
 
@@ -115,8 +134,8 @@ router.beforeResolve(async (to, from, next) => {
 router.beforeEach(async (to, from, next) => {
     const isLoggedIn = store.getters["auth/isLoggedIn"];
 
-    // Redirect authenticated users away from the login page
-    if (to.name === "Login" && isLoggedIn) {
+    // Redirect authenticated users away from the login and register pages
+    if ((to.name === "Login" || to.name === "Register") && isLoggedIn) {
         return next({ name: "Home" });
     }
 
